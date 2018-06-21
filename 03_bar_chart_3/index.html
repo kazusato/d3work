@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .chart rect {
+            fill: steelblue;
+        }
+        .chart text {
+            fill: white;
+            font: 10px sans-serif;
+            text-anchor: middle;
+        }
+    </style>
+</head>
+<body>
+<h1>Let's Make a Bar Chart, III</h1>
+<h2>Rotating into Columns</h2>
+<svg class="chart" id="rotating"></svg>
+<h2>Encoding Ordinal Data</h2>
+<svg class="chart" id="ordinal"></svg>
+<script src="//d3js.org/d3.v3.min.js" charset="UTF-8"></script>
+<script>
+    var width = 960,
+        height = 500;
+    var y = d3.scale.linear()
+        .range([height, 0]);
+    var chart = d3.select("#rotating")
+        .attr("width", width)
+        .attr("height", height);
+    d3.tsv("data.tsv", type, function (error, data) {
+        y.domain([0, d3.max(data, function (d) {
+            return d.value;
+        })]);
+        var barWidth = width / data.length;
+        var bar = chart.selectAll("g")
+            .data(data)
+            .enter().append("g")
+            .attr("transform", function (d, i) {
+                return "translate(" + i * barWidth + ", 0)";
+            });
+        bar.append("rect")
+            .attr("y", function (d) {
+                return y(d.value);
+            })
+            .attr("height", function (d) {
+                return height - y(d.value);
+            })
+            .attr("width", barWidth - 1);
+        bar.append("text")
+            .attr("x", barWidth / 2)
+            .attr("y", function (d) {
+                return y(d.value) + 3;
+            })
+            .attr("dy", ".75em")
+            .text(function (d) {
+                return d.value;
+            });
+    });
+    
+    function type(d) {
+        d.value = +d.value;
+        return d;
+    }
+</script>
+<script>
+    var ox = d3.scale.ordinal()
+        .rangeRoundBands([0, width], .1);
+    var oy = d3.scale.linear()
+        .range([height, 0]);
+    var ochart = d3.select("#ordinal")
+        .attr("width", width)
+        .attr("height", height)
+    d3.tsv("data.tsv", type, function (error, data) {
+        ox.domain(data.map(function (d) {
+            return d.name;
+        }));
+        oy.domain([0, d3.max(data, function (d) {
+            return d.value;
+        })]);
+        var obar = ochart.selectAll("g")
+            .data(data)
+            .enter().append("g")
+            .attr("transform", function (d) {
+                return "translate(" + ox(d.name) + ", 0)";
+            });
+        obar.append("rect")
+            .attr("y", function (d) {
+                return oy(d.value);
+            })
+            .attr("height", function (d) {
+                return height - oy(d.value);
+            })
+            .attr("width", ox.rangeBand());
+        obar.append("text")
+            .attr("x", ox.rangeBand() / 2)
+            .attr("y", function (d) {
+                return oy(d.value) + 3;
+            })
+            .attr("dy", ".75em")
+            .text(function (d) {
+                return d.value;
+            });
+    });
+</script>
+</body>
+</html>

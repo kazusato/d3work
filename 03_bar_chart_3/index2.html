@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .bar {
+            fill: steelblue;
+        }
+        .axis text {
+            font: 10px sans-serif;
+        }
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: #000;
+            shape-rendering: crispEdges;
+        }
+        .x.axis path {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<h1>Let's Make a Bar Chart, III</h1>
+<h2>Margins and Axes</h2>
+<svg class="chart" id="marginsaxes"></svg>
+<script src="//d3js.org/d3.v3.min.js" charset="UTF-8"></script>
+<script>
+    var margin = {top: 20, right: 30, bottom: 30, left: 40},
+        mwidth = 960 - margin.left - margin.right,
+        mheight = 500 - margin.top - margin.bottom;
+    var mx = d3.scale.ordinal()
+        .rangeRoundBands([0, mwidth], .1);
+    var my = d3.scale.linear()
+        .range([mheight, 0]);
+    var xAxis = d3.svg.axis()
+        .scale(mx)
+        .orient("bottom");
+    var yAxis = d3.svg.axis()
+        .scale(my)
+        .orient("left");
+    var mchart = d3.select("#marginsaxes")
+        .attr("width", mwidth + margin.left + margin.right)
+        .attr("height", mheight + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    d3.tsv("data.tsv", type, function (error, data) {
+        mx.domain(data.map(function (d) {
+            return d.name;
+        }));
+        my.domain([0, d3.max(data, function (d) {
+            return d.value;
+        })]);
+        mchart.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0, " + mheight + ")")
+            .call(xAxis);
+        mchart.append("g")
+            .attr("class", "y axis")
+            .call(yAxis);
+        mchart.selectAll(".bar")
+            .data(data)
+            .enter().append("rect")
+            .attr("class", "bar")
+            .attr("x", function (d) {
+                return mx(d.name);
+            })
+            .attr("y", function (d) {
+                return my(d.value);
+            })
+            .attr("height", function (d) {
+                return mheight - my(d.value);
+            })
+            .attr("width", mx.rangeBand());
+    });
+
+    function type(d) {
+        d.value = +d.value;
+        return d;
+    }
+</script>
+</body>
+</html>

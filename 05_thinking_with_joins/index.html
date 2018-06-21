@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+<svg width="720" height="500" id="mainview"></svg>
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<script>
+    let svg = d3.select("#mainview");
+    svg.selectAll("circle")
+        .data([{x: 200, y: 200}, {x: 500, y: 200}])
+        .enter().append("circle")
+        .attr("cx", d => d.x)
+        .attr("cy", d => d.y)
+        .attr("r", 100);
+</script>
+</body>
+</html>

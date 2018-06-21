@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+    button.withpadding {
+        padding: 20px;
+    }
+</style>
+</head>
+<body>
+<h1>Three Little Circles</h1>
+<h2>Once upon a time, there were three little circles.</h2>
+<svg width="720" height="120">
+    <circle cx="40" cy="60" r="10"></circle>
+    <circle cx="80" cy="60" r="10"></circle>
+    <circle cx="120" cy="60" r="10"></circle>
+</svg>
+<h2>Color and size changed.</h2>
+<svg width="720" height="120">
+    <circle class="colorsize" cx="40" cy="60" r="10"></circle>
+    <circle class="colorsize" cx="80" cy="60" r="10"></circle>
+    <circle class="colorsize" cx="120" cy="60" r="10"></circle>
+</svg>
+<h2>Random Location</h2>
+<svg width="720" height="120">
+    <circle class="randomloc" cx="40" cy="60" r="10"></circle>
+    <circle class="randomloc" cx="80" cy="60" r="10"></circle>
+    <circle class="randomloc" cx="120" cy="60" r="10"></circle>
+</svg>
+<h2>Circles with Data</h2>
+<svg width="720" height="120">
+    <circle class="withdata" cx="40" cy="60" r="10"></circle>
+    <circle class="withdata" cx="80" cy="60" r="10"></circle>
+    <circle class="withdata" cx="120" cy="60" r="10"></circle>
+</svg>
+<h2>Entering Elements</h2>
+<svg width="720" height="120" id="enterelem"></svg>
+<h2>Exiting Elements</h2>
+<svg width="720" height="120" id="exitelem"></svg>
+<div>
+    <button name="exitbtn" class="withpadding" onclick="exitElements()">Exiting Circles</button>
+    <button name="exitbtn" class="withpadding" onclick="moveElements()">Move</button>
+    <button name="exitbtn" class="withpadding" onclick="prepareExitingElements()">Reset</button>
+</div>
+<script src="//d3js.org/d3.v3.min.js"></script>
+<script>
+    changeColorSize();
+    randomLocation();
+    circlesWithData();
+    enteringElements();
+    prepareExitingElements();
+
+    function changeColorSize() {
+        let circle = d3.selectAll("circle.colorsize");
+        circle.style("fill", "steelblue");
+        circle.attr("r", 30);
+    }
+
+    function randomLocation() {
+        let circle = d3.selectAll("circle.randomloc");
+        circle.attr("cx", function () {
+            return Math.random() * 720;
+        });
+    }
+
+    function circlesWithData() {
+        let circle = d3.selectAll("circle.withdata");
+        circle.data([32, 57, 112]);
+        circle.attr("r", function (d) {
+            return Math.sqrt(d);
+        })
+    }
+
+    function enteringElements() {
+        let svg = d3.select("#enterelem");
+        let circle = svg.selectAll("circle")
+            .data([32, 57, 112, 293]);
+        let circleEnter = circle.enter().append("circle");
+        circleEnter.attr("cy", 60);
+        circleEnter.attr("cx", function (d, i) {
+            return i * 100 + 30;
+        });
+        circleEnter.attr("r", function (d) {
+            return Math.sqrt(d);
+        });
+    }
+
+    function prepareExitingElements() {
+        d3.select("#exitelem")
+            .selectAll("circle")
+            .data([32, 57, 112, 293])
+            .enter().append("circle")
+            .attr("cy", 60)
+            .attr("cx", function (d, i) {
+                return i * 100 + 30;
+            })
+            .attr("r", function (d) {
+                return Math.sqrt(d);
+            });
+    }
+
+    function exitElements() {
+        d3.select("#exitelem")
+            .selectAll("circle")
+            .data([32, 57])
+            .exit().remove();
+    }
+
+    function moveElements() {
+        let circle = d3.selectAll("#exitelem")
+            .selectAll("circle");
+        circle.attr("cx", function () {
+            return Math.random() * 720;
+        });
+        circle.attr("cy", function () {
+            return Math.random() * 120;
+        });
+    }
+</script>
+</body>
+</html>
